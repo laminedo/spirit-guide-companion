@@ -1,0 +1,1522 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spirit Guide Companion</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,0..100;1,9..144,300..600,0..100&display=swap">
+<style>
+/* Layout: one calm, left-aligned reading column inside an app shell. Tabs sit in the top bar on wide
+   screens and in a thumb-reach bar on phones. A single "first light" halo is the only loud element. */
+:root {
+  --paper: #EDF1F3;
+  --surface: #FAFCFC;
+  --sunk: #E1E9EC;
+  --ink: #15262E;
+  --ink-soft: #4A5F69;
+  --line: #CBD7DC;
+  --deep: #173642;
+  --on-deep: #EAF2F4;
+  --on-deep-soft: #AFC5CC;
+  --glow: #E9A53F;
+  --on-glow: #1A1405;
+  --glow-ink: #8C5A08;
+  --glow-wash: #F7EBD3;
+  --focus: #1F6F8B;
+
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-body: "Figtree", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 28px;
+  --gutter: clamp(16px, 4vw, 32px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0E1A20;
+    --surface: #15252D;
+    --sunk: #1C3038;
+    --ink: #E4EDF0;
+    --ink-soft: #9BB0B9;
+    --line: #2B414B;
+    --deep: #1B3A47;
+    --on-deep: #EAF2F4;
+    --on-deep-soft: #AFC5CC;
+    --glow: #F0B352;
+    --on-glow: #1A1405;
+    --glow-ink: #F0B352;
+    --glow-wash: #2F2A1B;
+    --focus: #6FC3DD;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0E1A20;
+  --surface: #15252D;
+  --sunk: #1C3038;
+  --ink: #E4EDF0;
+  --ink-soft: #9BB0B9;
+  --line: #2B414B;
+  --deep: #1B3A47;
+  --on-deep: #EAF2F4;
+  --on-deep-soft: #AFC5CC;
+  --glow: #F0B352;
+  --on-glow: #1A1405;
+  --glow-ink: #F0B352;
+  --glow-wash: #2F2A1B;
+  --focus: #6FC3DD;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+h1, h2, h3, p, ul, ol, dl, dd, fieldset, legend, blockquote { margin: 0; padding: 0; }
+ul, ol { list-style: none; }
+fieldset { border: 0; min-width: 0; }
+a { color: inherit; }
+button, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 4px; }
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-variation-settings: "SOFT" 100;
+  line-height: 1.14;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+h1 { font-size: clamp(2rem, 6.2vw, 2.9rem); }
+h1:focus { outline: none; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.2rem; }
+p { max-width: 40rem; text-wrap: pretty; }
+.lead { font-size: 1.1875rem; color: var(--ink-soft); }
+.soft { color: var(--ink-soft); }
+.small { font-size: 0.875rem; }
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--glow-ink);
+}
+.link { color: var(--glow-ink); font-weight: 600; text-underline-offset: 3px; }
+
+/* ---------- shell ---------- */
+.shell {
+  max-width: 54rem;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  padding-block: 0 6.5rem;
+}
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.9rem;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 100;
+  font-size: 1.125rem;
+}
+.brand svg { width: 22px; height: 22px; flex: none; color: var(--glow-ink); }
+
+.tabs {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
+}
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  padding: 6px 2px;
+  border-radius: var(--r-sm);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--ink-soft);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.tab svg { width: 22px; height: 22px; }
+.tab.is-on { color: var(--ink); background: var(--sunk); }
+.tab.is-on svg { color: var(--glow-ink); }
+
+@media (min-width: 820px) {
+  .shell { padding-block: 0 4rem; }
+  .top {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 10;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+  }
+  .tabs {
+    position: static;
+    display: flex;
+    gap: 0.15rem;
+    background: none;
+    border: 0;
+    padding: 0;
+  }
+  .tab { flex-direction: row; padding: 0.45rem 0.75rem; font-size: 0.9375rem; }
+  .tab svg { display: none; }
+}
+
+.view { display: flex; flex-direction: column; gap: 2.25rem; padding-block: 1.25rem 0; }
+.block { display: flex; flex-direction: column; gap: 1rem; }
+.head { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.foot {
+  margin-top: 3.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+}
+
+/* ---------- buttons, chips, fields ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.9rem;
+  padding: 0.65rem 1.2rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn--glow { background: var(--glow); color: var(--on-glow); }
+.btn--ink { background: var(--ink); color: var(--paper); }
+.btn--line { background: transparent; border-color: var(--line); color: var(--ink); }
+.btn--on-deep { background: transparent; border-color: color-mix(in srgb, var(--on-deep) 45%, transparent); color: var(--on-deep); }
+.btn:hover { filter: brightness(1.06); }
+.btn--line:hover, .btn--on-deep:hover { filter: none; border-color: currentColor; }
+.btn[disabled] { opacity: 0.4; cursor: default; filter: none; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.6rem;
+  padding: 0.4rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: var(--sunk);
+  color: var(--ink);
+  font-size: 0.9375rem;
+  line-height: 1.25;
+  text-align: left;
+}
+button.chip { cursor: pointer; }
+button.chip:hover { border-color: var(--line); }
+button.chip[aria-pressed="true"] { background: var(--glow-wash); border-color: var(--glow); }
+.chip--quiet { min-height: 0; padding: 0.3rem 0.8rem; color: var(--ink-soft); }
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: clamp(1rem, 3.5vw, 1.75rem);
+}
+
+.field { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
+.field label { font-size: 0.875rem; font-weight: 600; }
+.input, textarea {
+  width: 100%;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: 0.65rem 0.8rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+textarea { min-height: 5.75rem; resize: vertical; }
+.input:focus-visible, textarea:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; border-color: var(--focus); }
+::placeholder { color: var(--ink-soft); opacity: 0.8; }
+.check { display: flex; align-items: center; gap: 0.6rem; font-weight: 500; }
+.check input { width: 1.25rem; height: 1.25rem; accent-color: var(--glow-ink); }
+.status { font-size: 0.875rem; color: var(--ink-soft); }
+
+.chev {
+  width: 0.6rem;
+  height: 0.6rem;
+  margin-inline: 0.3rem 0.45rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.2s;
+  color: var(--ink-soft);
+}
+details[open] > summary .chev { transform: rotate(225deg); }
+.chev--go { transform: rotate(-45deg); }
+summary { list-style: none; cursor: pointer; }
+summary::-webkit-details-marker { display: none; }
+
+/* ---------- home ---------- */
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: var(--deep);
+  color: var(--on-deep);
+  border-radius: var(--r-lg);
+  padding: clamp(1.5rem, 5.5vw, 3.25rem);
+}
+.hero h1 { max-width: 15ch; }
+.hero p { max-width: 31rem; color: var(--on-deep-soft); }
+.hero .eyebrow { color: var(--glow); }
+.hero .row { padding-top: 0.5rem; }
+.hero__halo {
+  position: absolute;
+  z-index: -1;
+  top: -8rem;
+  right: -8rem;
+  width: 18rem;
+  height: 18rem;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--glow) 55%, transparent);
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--glow) 36%, transparent) 0%,
+    color-mix(in srgb, var(--glow) 10%, transparent) 46%,
+    transparent 70%);
+}
+.hero__halo::after {
+  content: "";
+  position: absolute;
+  inset: 24%;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--glow) 40%, transparent);
+}
+@media (min-width: 700px) {
+  .hero__halo { top: -7rem; right: -6rem; width: 26rem; height: 26rem; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hero__halo { animation: halo 9s ease-in-out infinite alternate; }
+}
+@keyframes halo {
+  from { transform: scale(0.95); opacity: 0.8; }
+  to { transform: scale(1.05); opacity: 1; }
+}
+
+.doors { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.door {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.15rem 1rem;
+  padding: 1.05rem 0.25rem;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+}
+.door__q { font-family: var(--font-display); font-variation-settings: "SOFT" 100; font-size: 1.3rem; line-height: 1.2; }
+.door__a { grid-column: 1; color: var(--ink-soft); font-size: 0.9688rem; }
+.door .chev { grid-column: 2; grid-row: 1 / span 2; }
+.door:hover .door__q { color: var(--glow-ink); }
+
+/* ---------- angel ---------- */
+.ways { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.way {
+  display: grid;
+  grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+  gap: 0.25rem 1.5rem;
+  padding: 1rem 0.25rem;
+  border-bottom: 1px solid var(--line);
+}
+.way p { color: var(--ink-soft); }
+@media (max-width: 640px) { .way { grid-template-columns: minmax(0, 1fr); } }
+
+.feel { font-family: var(--font-display); font-variation-settings: "SOFT" 100; font-style: italic; font-size: clamp(1.6rem, 5vw, 2.1rem); line-height: 1.2; color: var(--glow-ink); }
+
+.ask { display: flex; flex-direction: column; padding-bottom: 1.15rem; border-bottom: 1px solid var(--line); }
+.ask:last-child { padding-bottom: 0; border-bottom: 0; }
+.ask legend { font-weight: 500; margin-bottom: 0.65rem; }
+.seg { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.seg__opt { position: relative; display: inline-flex; }
+.seg__opt input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.seg__opt label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: var(--sunk);
+  font-size: 0.9375rem;
+}
+.seg__opt input:checked + label { background: var(--glow-wash); border-color: var(--glow); font-weight: 600; }
+.seg__opt input:focus-visible + label { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+.result {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  background: var(--glow-wash);
+  border-radius: var(--r-md);
+  padding: clamp(1rem, 3.5vw, 1.5rem);
+}
+.result h3 { font-size: 1.45rem; }
+.result--waiting { background: var(--sunk); color: var(--ink-soft); }
+.tip { display: flex; flex-direction: column; gap: 0.2rem; padding-top: 0.9rem; border-top: 1px solid color-mix(in srgb, var(--glow) 45%, transparent); }
+.tip strong { font-weight: 600; }
+
+.aloud {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  background: var(--deep);
+  color: var(--on-deep);
+  border-radius: var(--r-md);
+  padding: clamp(1.15rem, 4vw, 1.75rem);
+}
+.aloud .eyebrow { color: var(--glow); }
+.aloud blockquote {
+  max-width: 34rem;
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 100;
+  font-style: italic;
+  font-size: clamp(1.3rem, 4.2vw, 1.6rem);
+  line-height: 1.3;
+}
+
+/* ---------- guides ---------- */
+.guides { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.guide { border-bottom: 1px solid var(--line); padding-inline: 0.75rem; }
+.guide.is-picked { background: var(--glow-wash); }
+.guide summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.1rem 0.75rem;
+  padding-block: 0.95rem;
+}
+.guide__gift { grid-column: 1; grid-row: 1; }
+.guide__name { grid-column: 1; grid-row: 2; font-family: var(--font-display); font-variation-settings: "SOFT" 100; font-size: 1.35rem; line-height: 1.2; }
+.guide__tag {
+  display: none;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--glow);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.guide.is-picked .guide__tag { display: inline-flex; }
+.guide summary .chev { grid-column: 3; grid-row: 1 / span 2; }
+.guide__body { display: flex; flex-direction: column; gap: 1rem; padding-bottom: 1.35rem; }
+@media (max-width: 560px) {
+  .guide__tag { grid-column: 1; grid-row: 3; justify-self: start; margin-top: 0.35rem; }
+}
+
+.facts { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: 0.75rem 1.25rem; }
+.facts dt { padding-top: 0.22rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+@media (max-width: 640px) {
+  .facts { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; }
+  .facts dd { margin-bottom: 0.75rem; }
+}
+.dots { display: flex; flex-direction: column; gap: 0.25rem; }
+.dots li { position: relative; padding-left: 1.1rem; }
+.dots li::before { content: ""; position: absolute; left: 0; top: 0.66em; width: 0.4rem; height: 0.4rem; border-radius: 50%; background: var(--glow); }
+
+/* ---------- numbers ---------- */
+.numbers { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+.pad { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.5rem; }
+.pad button {
+  min-height: 3.25rem;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  background: var(--sunk);
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 100;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+.pad button:hover { border-color: var(--line); }
+.pad button[aria-pressed="true"] { background: var(--glow-wash); border-color: var(--glow); }
+@media (min-width: 760px) {
+  .numbers { grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); align-items: start; }
+  .pad { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.num__n {
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 100;
+  font-variant-numeric: lining-nums;
+  font-weight: 300;
+  font-size: clamp(4.25rem, 17vw, 7rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--glow-ink);
+}
+.num__ask { font-family: var(--font-display); font-variation-settings: "SOFT" 100; font-style: italic; font-size: 1.4rem; line-height: 1.3; }
+
+/* ---------- practice ---------- */
+.rail { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.5rem; scroll-margin-top: 5rem; }
+.rail button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  min-width: 0;
+  padding: 0.6rem 0.2rem 0.4rem;
+  background: none;
+  border: 0;
+  border-top: 2px solid var(--line);
+  border-radius: 0;
+  color: var(--ink-soft);
+  text-align: left;
+  cursor: pointer;
+}
+.rail button[aria-current="step"] { border-top-color: var(--glow); color: var(--ink); }
+.rail__n { font-family: var(--font-display); font-variation-settings: "SOFT" 100; font-size: 1.2rem; line-height: 1; }
+.rail__t { font-size: 0.8125rem; font-weight: 500; line-height: 1.25; }
+.step { display: flex; flex-direction: column; gap: 1.1rem; }
+.step h2 { font-size: 1.7rem; }
+
+.breath { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding-block: 0.75rem 0.25rem; }
+.breath__ring {
+  width: 8.5rem;
+  height: 8.5rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--glow);
+  background: radial-gradient(circle, color-mix(in srgb, var(--glow) 32%, transparent), transparent 70%);
+  transform: scale(0.8);
+  transition: transform 4s ease-in-out;
+}
+.breath__ring.is-in { transform: scale(1.12); }
+.breath__ring.is-out { transform: scale(0.8); transition-duration: 5s; }
+.breath__label { min-height: 1.6em; font-family: var(--font-display); font-variation-settings: "SOFT" 100; font-size: 1.3rem; text-align: center; }
+@media (prefers-reduced-motion: reduce) {
+  .breath__ring, .breath__ring.is-in, .breath__ring.is-out { transform: none; transition: none; }
+  .chev { transition: none; }
+}
+
+/* ---------- log ---------- */
+.progress { display: flex; flex-wrap: wrap; align-items: center; gap: 0.9rem; }
+.track { display: flex; gap: 0.35rem; }
+.track i { width: 1.6rem; height: 0.45rem; border-radius: 999px; background: var(--sunk); border: 1px solid var(--line); }
+.track i.is-on { background: var(--glow); border-color: var(--glow); }
+.days { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.day { border-bottom: 1px solid var(--line); padding-inline: 0.25rem; }
+.day summary {
+  display: grid;
+  grid-template-columns: 5.75rem minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding-block: 0.95rem;
+}
+.day__name { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--glow-ink); }
+.day__sum { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-soft); }
+.day__sum.has { color: var(--ink); }
+.pill { padding: 0.15rem 0.6rem; border-radius: 999px; background: var(--sunk); color: var(--ink-soft); font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+.pill.is-acted { background: var(--glow-wash); color: var(--glow-ink); border: 1px solid var(--glow); }
+.day__body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.9rem; padding: 0.25rem 0 1.4rem; }
+.day__date { font-size: 0.875rem; color: var(--ink-soft); }
+@media (min-width: 700px) {
+  .day__body { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .day__body .span2 { grid-column: 1 / -1; }
+}
+.confirm { display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); }
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+  z-index: 20;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 32px);
+  padding: 0.7rem 1.15rem;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.9375rem;
+  text-align: center;
+}
+@media (min-width: 820px) { .toast { bottom: 2rem; } }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header class="top">
+    <a class="brand" href="#home" data-go="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.4" fill="currentColor" stroke="none"/></svg>
+      <span>Spirit Guide Companion</span>
+    </a>
+    <nav class="tabs" aria-label="Sections">
+      <a class="tab" href="#home" data-go="home" data-nav="home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18h18"/><path d="M7 18a5 5 0 0 1 10 0"/><path d="M12 6v3M5.6 9.6l1.8 1.8M18.4 9.6l-1.8 1.8"/></svg>
+        <span>Start</span>
+      </a>
+      <a class="tab" href="#angel" data-go="angel" data-nav="angel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="4.6" rx="4.6" ry="1.6"/><circle cx="12" cy="10.8" r="2.6"/><path d="M5.5 20.5c.6-3.6 3.2-5.6 6.5-5.6s5.9 2 6.5 5.6"/></svg>
+        <span>My angel</span>
+      </a>
+      <a class="tab" href="#guides" data-go="guides" data-nav="guides">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="6" cy="6" r="1.5"/><circle cx="12" cy="6" r="1.5"/><circle cx="18" cy="6" r="1.5"/><circle cx="6" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="18" cy="12" r="1.5"/><circle cx="6" cy="18" r="1.5"/><circle cx="12" cy="18" r="1.5"/><circle cx="18" cy="18" r="1.5"/></svg>
+        <span>Guides</span>
+      </a>
+      <a class="tab" href="#numbers" data-go="numbers" data-nav="numbers">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8l2-2v12M11 8l2-2v12M17 8l2-2v12"/></svg>
+        <span>Numbers</span>
+      </a>
+      <a class="tab" href="#practice" data-go="practice" data-nav="practice">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5C7 17 4.5 14 4.5 10.5A4 4 0 0 1 12 8.2a4 4 0 0 1 7.5 2.3C19.5 14 17 17 12 20.5z"/></svg>
+        <span>Practice</span>
+      </a>
+      <a class="tab" href="#log" data-go="log" data-nav="log">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 8.5h6M9 12h6M9 15.5h3.5"/></svg>
+        <span>Log</span>
+      </a>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <!-- ============ START ============ -->
+    <section class="view" id="view-home">
+      <div class="hero">
+        <div class="hero__halo" aria-hidden="true"></div>
+        <p class="eyebrow">A listening companion</p>
+        <h1 tabindex="-1">Learn how your guides speak to you</h1>
+        <p>Guidance is usually quiet. It can be a thought that pops in, a dream that stays with you, or a coincidence with perfect timing. This companion helps you notice it and answer.</p>
+        <div class="row">
+          <a class="btn btn--glow" href="#angel" data-go="angel">How my guardian angel reaches me</a>
+          <a class="btn btn--on-deep" href="#practice" data-go="practice">Something just caught my attention</a>
+        </div>
+      </div>
+
+      <div class="block">
+        <h2>Guidance tends to arrive as</h2>
+        <ul class="chips">
+          <li class="chip chip--quiet">A thought that pops in</li>
+          <li class="chip chip--quiet">A dream you can't shake</li>
+          <li class="chip chip--quiet">A solution out of nowhere</li>
+          <li class="chip chip--quiet">A pull toward one path</li>
+          <li class="chip chip--quiet">A perfectly timed coincidence</li>
+          <li class="chip chip--quiet">A number that keeps repeating</li>
+        </ul>
+      </div>
+
+      <div class="block">
+        <h2>Where do you want to go?</h2>
+        <div class="doors">
+          <a class="door" href="#angel" data-go="angel">
+            <span class="door__q">How does my guardian angel reach me?</span>
+            <span class="door__a" id="door-angel">Five ways your protector gets through, and which ones you already know.</span>
+            <span class="chev chev--go" aria-hidden="true"></span>
+          </a>
+          <a class="door" href="#practice" data-go="practice">
+            <span class="door__q">Something just caught my attention</span>
+            <span class="door__a">Four steps to take before you decide what it means.</span>
+            <span class="chev chev--go" aria-hidden="true"></span>
+          </a>
+          <a class="door" href="#numbers" data-go="numbers">
+            <span class="door__q">A number keeps following me</span>
+            <span class="door__a">What 000 through 999 may be pointing you toward.</span>
+            <span class="chev chev--go" aria-hidden="true"></span>
+          </a>
+          <a class="door" href="#guides" data-go="guides">
+            <span class="door__q">Who is helping me right now?</span>
+            <span class="door__a">Nine kinds of guides, matched to what you are going through.</span>
+            <span class="chev chev--go" aria-hidden="true"></span>
+          </a>
+          <a class="door" href="#log" data-go="log">
+            <span class="door__q">My seven-day listening log</span>
+            <span class="door__a" id="door-log">One line a day teaches you your own language of signs.</span>
+            <span class="chev chev--go" aria-hidden="true"></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MY ANGEL ============ -->
+    <section class="view" id="view-angel" hidden>
+      <div class="head">
+        <p class="eyebrow">Guardian angels · Protection</p>
+        <h1 tabindex="-1">How your guardian angel reaches you</h1>
+        <p class="lead">Guardian angels are the protectors on your spiritual team. They stay close for your whole life and draw nearest when you feel frightened, unsure, vulnerable or in need of reassurance.</p>
+      </div>
+
+      <div class="block">
+        <h2>Five ways they get through</h2>
+        <ul class="ways" id="ways"></ul>
+      </div>
+
+      <div class="block">
+        <h2>How their presence feels</h2>
+        <p class="feel">Steady. Loving. Reassuring.</p>
+        <p>That feeling is how you tell them apart. The guide describes true inner guidance as undramatic. It has no need to frighten you or push you.</p>
+      </div>
+
+      <div class="block">
+        <h2>Which of these do you already know?</h2>
+        <p class="soft">Answer from memory. Your first answer is the right one.</p>
+        <div class="panel">
+          <div id="quiz" class="block"></div>
+        </div>
+        <div id="angel-result" aria-live="polite"></div>
+      </div>
+
+      <div class="aloud">
+        <p class="eyebrow">Say this out loud</p>
+        <blockquote>Guardian angel, I'm listening. What do you want me to see right now? What is the one thing you would have me do?</blockquote>
+        <div class="row">
+          <a class="btn btn--glow" href="#practice" data-go="practice">Start the four steps</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ GUIDES ============ -->
+    <section class="view" id="view-guides" hidden>
+      <div class="head">
+        <p class="eyebrow">Your spiritual team</p>
+        <h1 tabindex="-1">Who is helping you right now?</h1>
+        <p class="lead">You have more than one kind of help. Choose what this moment feels like and the guide who tends to step forward will open.</p>
+      </div>
+
+      <div class="block">
+        <h2>What is going on for you?</h2>
+        <div class="chips" id="needs"></div>
+      </div>
+
+      <div class="block">
+        <h2>The nine guides</h2>
+        <div class="guides" id="guides-list"></div>
+      </div>
+    </section>
+
+    <!-- ============ NUMBERS ============ -->
+    <section class="view" id="view-numbers" hidden>
+      <div class="head">
+        <p class="eyebrow">Repeating numbers</p>
+        <h1 tabindex="-1">When a number keeps appearing</h1>
+        <p class="lead">Repetition is one of the easiest ways guidance gets your attention. You see 11:11 on the clock, then 333 on a receipt, then 333 again somewhere unrelated.</p>
+        <p>Don't hunt for numbers or read a message into every one. Get curious when the same number keeps finding you.</p>
+      </div>
+
+      <div class="numbers">
+        <div class="pad" id="pad" role="group" aria-label="Choose the number you keep seeing"></div>
+        <div class="panel" aria-live="polite">
+          <p class="num__n" id="num-n">111</p>
+          <h2 id="num-title">A beginning</h2>
+          <p id="num-body"></p>
+          <div class="block">
+            <p class="eyebrow">Ask yourself</p>
+            <p class="num__ask" id="num-ask"></p>
+          </div>
+          <div class="row">
+            <button type="button" class="btn btn--ink" id="num-work">Work through 111 step by step</button>
+          </div>
+        </div>
+      </div>
+
+      <p class="soft">Treat the number as a nudge to look up. The meaning is in what you were thinking about when it appeared.</p>
+    </section>
+
+    <!-- ============ PRACTICE ============ -->
+    <section class="view" id="view-practice" hidden>
+      <div class="head">
+        <p class="eyebrow">Four steps</p>
+        <h1 tabindex="-1">When a sign appears</h1>
+        <p class="lead">A number, a dream, a coincidence, a sudden idea, a nudge. Before you decide what it means, walk through these steps.</p>
+      </div>
+
+      <div class="field">
+        <label for="p-sign">What caught your attention? <span class="soft">(optional)</span></label>
+        <input class="input" type="text" id="p-sign" data-draft="sign" autocomplete="off" placeholder="For example: I keep seeing 333">
+      </div>
+
+      <div class="block">
+        <div class="rail" id="rail" role="group" aria-label="Steps">
+          <button type="button" data-step="0"><span class="rail__n">1</span><span class="rail__t">Breathe</span></button>
+          <button type="button" data-step="1"><span class="rail__n">2</span><span class="rail__t">Look back</span></button>
+          <button type="button" data-step="2"><span class="rail__n">3</span><span class="rail__t">Ask</span></button>
+          <button type="button" data-step="3"><span class="rail__n">4</span><span class="rail__t">One step</span></button>
+        </div>
+
+        <div class="panel">
+          <div class="step" data-step-panel="0">
+            <h2>Pause and take a breath</h2>
+            <p>You don't have to do or decide anything yet. The pause itself is the practice.</p>
+            <div class="breath">
+              <div class="breath__ring" id="breath-ring" aria-hidden="true"></div>
+              <p class="breath__label" id="breath-label" aria-live="polite"></p>
+              <button type="button" class="btn btn--line" id="breath-btn">Breathe with me</button>
+            </div>
+          </div>
+
+          <div class="step" data-step-panel="1" hidden>
+            <h2>Look at the moment just before</h2>
+            <p>What were you thinking about? What were you feeling? Were you worried, weighing a decision, asking for help, or thinking of someone? What surrounds a sign often matters as much as the sign.</p>
+            <div class="field">
+              <label for="p-context">What was happening</label>
+              <textarea id="p-context" data-draft="context" placeholder="For example: I was worrying about whether to take the new job"></textarea>
+            </div>
+          </div>
+
+          <div class="step" data-step-panel="2" hidden>
+            <h2>Hand on your heart, then ask</h2>
+            <div class="aloud">
+              <p class="eyebrow">Say this out loud</p>
+              <blockquote>I'm here and I'm listening. What do you want me to notice? What would you like me to do with it?</blockquote>
+            </div>
+            <p>Don't strain for an answer. Notice what comes on its own. It may be a thought, a feeling, an image, a memory, an idea, or simply knowing. Give the most weight to whatever arrives first, before your mind starts editing.</p>
+            <div class="field">
+              <label for="p-sensed">What I sensed</label>
+              <textarea id="p-sensed" data-draft="sensed" placeholder="Write the first thing that came, even if it seems small"></textarea>
+            </div>
+          </div>
+
+          <div class="step" data-step-panel="3" hidden>
+            <h2>Ask for one next step</h2>
+            <p>No grand plan is required. Ask for a single, simple thing you can do next.</p>
+            <div class="field">
+              <label for="p-step">My one next step</label>
+              <input class="input" type="text" id="p-step" data-draft="step" autocomplete="off" placeholder="For example: call my sister tonight">
+            </div>
+            <p class="status" id="p-msg" role="status"></p>
+          </div>
+
+          <div class="row">
+            <button type="button" class="btn btn--line" id="step-back">Back</button>
+            <button type="button" class="btn btn--ink" id="step-next">Next step</button>
+            <button type="button" class="btn btn--glow" id="step-save" hidden>Save to my listening log</button>
+          </div>
+        </div>
+        <p class="status save-status" role="status"></p>
+      </div>
+    </section>
+
+    <!-- ============ LOG ============ -->
+    <section class="view" id="view-log" hidden>
+      <div class="head">
+        <p class="eyebrow">Seven-day practice</p>
+        <h1 tabindex="-1">The listening log</h1>
+        <p class="lead">For seven days, don't go looking for signs. Just pay closer attention. When something catches your eye on its own, write one line about it.</p>
+        <p>One line a day is enough. Your first impression, before you tidy it up, is usually the truest.</p>
+      </div>
+
+      <div class="block">
+        <div class="progress">
+          <div class="track" id="track" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <p id="log-count">0 of 7 days noted</p>
+        </div>
+        <div class="days" id="log-days"></div>
+        <p class="status save-status" role="status"></p>
+      </div>
+
+      <div class="block">
+        <h2>At the end of the week</h2>
+        <p>Read your notes back, then answer one question.</p>
+        <div class="field">
+          <label for="week-note">Which of these came on their own, and which was I trying to force?</label>
+          <textarea id="week-note" placeholder="Read the seven days first. Then write what you see."></textarea>
+        </div>
+      </div>
+
+      <div class="block">
+        <h2>What a week of notes shows you</h2>
+        <ul class="dots">
+          <li>Each kind of guidance has its own feel.</li>
+          <li>Certain signs turn up in certain situations.</li>
+          <li>What you tried to make happen feels different from what simply arrived.</li>
+        </ul>
+        <p>This is how you build your own language with your guides. Signs only get your attention. Your intuition tells you what they mean, so you never need to depend on them.</p>
+      </div>
+
+      <div class="block">
+        <div class="row">
+          <button type="button" class="btn btn--line" id="new-week">Start a new week</button>
+        </div>
+        <div class="confirm" id="new-week-confirm" hidden>
+          <p>This clears all seven days and your end-of-week answer. It can't be undone.</p>
+          <div class="row">
+            <button type="button" class="btn btn--ink" id="new-week-yes">Clear and start again</button>
+            <button type="button" class="btn btn--line" id="new-week-no">Keep my notes</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    <p>A personal, unofficial companion to the free guide "Signs From Your Guides" by Sonia Choquette. Everything here is summarized in new words. Her guide is the source and the full teaching.</p>
+    <p>Made for reflection. For worries about your health or safety, reach out to someone who can help in person.</p>
+  </footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---------- content (summarized from the guide, in new words) ----------
+  const CHANNELS = [
+    { id: 'warning', name: 'The sudden warning',
+      line: 'A clear inner "don\'t" or "wait" that lands before you have reasoned anything out.',
+      q: 'A sudden inner "no" or "wait" has stopped me from doing something.',
+      tip: 'When it comes, pause before you argue with it. Guidance is often the thought you were about to talk yourself out of. Note what you were about to do, then ask for one safe next step.' },
+    { id: 'protection', name: 'A feeling of protection',
+      line: 'Calm or safety settles over you when the moment gave you no reason to feel it.',
+      q: 'I have felt calm or safe at a moment that gave me every reason not to.',
+      tip: 'When calm arrives uninvited, stop and take it in. Look at what you were worried about a moment earlier. That worry is usually what the reassurance is answering.' },
+    { id: 'coincidence', name: 'A meaningful coincidence',
+      line: 'Things line up too neatly to shrug off.',
+      q: 'Coincidences happen to me that feel too well timed to ignore.',
+      tip: 'When things line up, look at what was on your mind just before. The timing carries more of the meaning than the event does.' },
+    { id: 'help', name: 'Help at the right moment',
+      line: 'A person, a call or a solution turns up exactly when you need it.',
+      q: 'Help has shown up right when I needed it, without my arranging it.',
+      tip: 'When help arrives, say thank you out loud and note what you had been needing. A week of notes will show you the pattern.' },
+    { id: 'presence', name: 'The sense of being watched over',
+      line: 'A quiet certainty that you are not facing this alone.',
+      q: 'I sometimes sense that someone is with me, looking out for me.',
+      tip: 'When you sense company, put a hand on your heart and ask your question plainly. Take the first thing that comes, before your mind edits it.' }
+  ];
+  const LEVELS = [{ v: 2, t: 'Often' }, { v: 1, t: 'Sometimes' }, { v: 0, t: 'Not yet' }];
+
+  const GUIDES = [
+    { id: 'guardian', name: 'Guardian Angels', gift: 'Protection', need: 'I feel afraid or unsure',
+      about: 'Your protectors. They stay beside you for your whole life.',
+      near: 'You feel frightened, exposed, uncertain or in need of comfort.',
+      signs: ['A sudden inner warning not to do something', 'Feeling protected for no visible reason', 'A coincidence that clearly means something', 'Help that turns up right on time', 'A strong sense of being watched over'],
+      feel: 'Steady, loving and reassuring.' },
+    { id: 'teacher', name: 'Teacher Guides', gift: 'Understanding', need: 'I\'m asking bigger questions',
+      about: 'They help you make sense of what life is teaching you and grow in awareness.',
+      near: 'You are asking deeper questions, learning something new or entering a new stage of spiritual growth.',
+      signs: ['Dreams', 'Flashes of insight', 'Something said in a conversation', 'A message that keeps repeating', 'A book, teacher or fact that surfaces at the perfect time'],
+      feel: 'A puzzle you have carried for ages suddenly makes sense.' },
+    { id: 'healer', name: 'Healer Guides', gift: 'Restoration', need: 'I\'m worn out or grieving',
+      about: 'They support you when your body or heart has run low.',
+      near: 'You are depleted, grieving, under heavy stress or simply need to recover.',
+      signs: ['A wave of peace', 'Warmth or tingling', 'A pull to rest', 'A hunch about what your body or spirit needs', 'Being led to the right person or support just in time'],
+      feel: 'Gentle, comforting and deeply calming.' },
+    { id: 'creative', name: 'Creative Guides', gift: 'Inspiration', need: 'I\'m making or solving something',
+      about: 'They love helping you make things.',
+      near: 'You are writing, teaching, designing, inventing, brainstorming, building a project or working a problem.',
+      signs: ['A bright idea out of nowhere', 'Seeing the fix for something you were stuck on', 'Waking up knowing what you want to make', 'A whole thought landing in your mind at once'],
+      feel: 'Fast. You catch yourself wondering where that idea came from.' },
+    { id: 'joy', name: 'Joy Guides', gift: 'Lightness', need: 'Life feels heavy or flat',
+      about: 'They remind you that life is more than a list of problems to solve.',
+      near: 'You have become too serious, discouraged, numb, angry, uninspired or closed off.',
+      signs: ['Humor', 'Music', 'Children and animals', 'A last-minute invitation', 'A sudden wish to dance or go somewhere', 'Something that makes you laugh out of the blue'],
+      feel: 'Your energy lifts. The joy is the guidance.' },
+    { id: 'helper', name: 'Helper Guides', gift: 'Everyday ease', need: 'I need today to go smoothly',
+      about: 'They look after the practical details of daily life.',
+      near: 'You are dealing with timing, travel, appointments or lost things, or you need to meet the right person.',
+      signs: ['Arriving at exactly the right moment', 'Someone handing you the information you needed', 'A cancellation that opens the perfect slot', 'A tangle that sorts itself out'],
+      feel: 'So practical that most people call it luck.' },
+    { id: 'nature', name: 'Nature Spirits', gift: 'Belonging', need: 'I need to slow down',
+      about: 'They reconnect you with the living intelligence of the natural world.',
+      near: 'The noise of daily life has pulled you away from the ground under your feet.',
+      signs: ['An animal that keeps getting your attention', 'A particular bird at a meaningful moment', 'A sudden bond with a tree, a flower, water or a place outdoors'],
+      feel: 'A simple invitation to slow down, get grounded and remember you belong to something larger.' },
+    { id: 'light', name: 'Light Beings', gift: 'Expansion', need: 'I\'m praying, meditating or changing deeply',
+      about: 'They work at a very high spiritual frequency.',
+      near: 'You are in prayer, meditation, spiritual awakening or a time of deep inner change.',
+      signs: ['Extraordinary peace', 'Light in your mind\'s eye', 'An elevated dream', 'Awareness that suddenly widens', 'Love and connection beyond words'],
+      feel: 'Vast more than personal. They remind you who you are and leave the details of your life to you.' },
+    { id: 'higher', name: 'Your Higher Self', gift: 'Inner knowing', need: 'A nudge keeps coming back',
+      about: 'The one guide who is no one else. It is your own soul at its clearest and most expanded.',
+      near: 'A quiet nudge keeps returning even after your mind has argued with it.',
+      signs: ['Intuition', 'Dreams', 'Inner knowing', 'Quiet nudges that will not go away'],
+      feel: 'Undramatic. It never needs to frighten or pressure you. You simply recognize it as true.' }
+  ];
+
+  const NUMBERS = [
+    { n: '000', title: 'Open space', body: 'Zero is potential that has not taken shape yet. Something new may be forming that is not ready to be named. Stay open and let the answer take its time.', ask: 'What is trying to come into being?' },
+    { n: '111', title: 'A beginning', body: 'One is the energy of starting. Look for the new idea, direction or possibility that has been asking for your attention.', ask: 'What am I being invited to start?' },
+    { n: '222', title: 'A second look', body: 'Two points to relationship, reflection and opposites meeting. You may be seeing another side of a situation, or something about yourself mirrored back.', ask: 'What is this showing me?' },
+    { n: '333', title: 'Room to grow', body: 'Three is growth, expression and expansion. Notice what feels most alive in your life and is asking for more of you.', ask: 'What wants more room to grow?' },
+    { n: '444', title: 'Solid ground', body: 'Four is order, structure and stability. Check the practical foundations. Something may need organizing, simplifying, strengthening or a clearer boundary.', ask: 'Where would more structure steady me?' },
+    { n: '555', title: 'A shift under way', body: 'Five is movement. You may be between an old way that has stopped working and a new one that has not settled yet. Move with the change.', ask: 'What adjustment is being asked of me?' },
+    { n: '666', title: 'Back in balance', body: 'There is nothing to fear in this one. Use it to check the give and take in your life. You may be over-giving, refusing to receive, or forcing something that needs cooperation.', ask: 'What needs to be brought back into balance?' },
+    { n: '777', title: 'Your own center', body: 'Seven calls you back to inner steadiness and deeper knowing. It may be time to stop looking outside yourself for one more answer and get quiet.', ask: 'What does the quiet part of me already know?' },
+    { n: '888', title: 'The timing of things', body: 'Eight is a reminder that life moves in rhythms and cycles. The wise move may be to read the timing and stop pushing.', ask: 'What rhythm can I move with?' },
+    { n: '999', title: 'A finished chapter', body: 'Nine is completion. Something may have reached its natural end. Finish it, let it go, forgive, outgrow the old pattern, or admit you are ready to move on.', ask: 'What am I ready to finish?' }
+  ];
+
+  const DAYS = ['one', 'two', 'three', 'four', 'five', 'six', 'seven'];
+  const VIEWS = ['home', 'angel', 'guides', 'numbers', 'practice', 'log'];
+  const DRAFT_FIELDS = ['sign', 'context', 'sensed', 'step'];
+
+  // ---------- helpers ----------
+  const $ = (s, r) => (r || document).querySelector(s);
+  const $$ = (s, r) => Array.prototype.slice.call((r || document).querySelectorAll(s));
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const lowerFirst = (s) => s.charAt(0).toLowerCase() + s.slice(1);
+  const joinList = (a) => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+  const reducedMotion = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const str = (v, max) => typeof v === 'string' ? v.slice(0, max || 4000) : '';
+
+  function todayISO() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function prettyDate(iso) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+    if (!m) return '';
+    try {
+      return new Date(+m[1], +m[2] - 1, +m[3]).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+    } catch (e) { return ''; }
+  }
+
+  // ---------- state ----------
+  const DATA_KEY = 'sgc-data-v1';
+  const UI_KEY = 'sgc-ui-v1';
+
+  function emptyDay() { return { sign: '', context: '', sensed: '', step: '', acted: false, date: '' }; }
+  function emptyData() {
+    return { v: 1, updatedAt: 0, angel: {}, draft: { sign: '', context: '', sensed: '', step: '' }, log: DAYS.map(emptyDay), weekNote: '' };
+  }
+  function normalize(raw) {
+    const d = emptyData();
+    if (!raw || typeof raw !== 'object') return d;
+    if (typeof raw.updatedAt === 'number' && isFinite(raw.updatedAt)) d.updatedAt = raw.updatedAt;
+    if (raw.angel && typeof raw.angel === 'object') {
+      CHANNELS.forEach((c) => { const v = raw.angel[c.id]; if (v === 0 || v === 1 || v === 2) d.angel[c.id] = v; });
+    }
+    if (raw.draft && typeof raw.draft === 'object') DRAFT_FIELDS.forEach((k) => { d.draft[k] = str(raw.draft[k]); });
+    if (Array.isArray(raw.log)) {
+      raw.log.slice(0, 7).forEach((x, i) => {
+        if (!x || typeof x !== 'object') return;
+        d.log[i] = {
+          sign: str(x.sign), context: str(x.context), sensed: str(x.sensed), step: str(x.step),
+          acted: x.acted === true,
+          date: typeof x.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x.date) ? x.date : ''
+        };
+      });
+    }
+    d.weekNote = str(raw.weekNote, 8000);
+    return d;
+  }
+  function readLS(key) { try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
+  function writeLS(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch (e) { return false; } }
+
+  let data = normalize(readLS(DATA_KEY));
+  const ui = { number: '111', need: '' };
+  (function () {
+    const u = readLS(UI_KEY);
+    if (!u || typeof u !== 'object') return;
+    if (NUMBERS.some((n) => n.n === u.number)) ui.number = u.number;
+    if (GUIDES.some((g) => g.id === u.need)) ui.need = u.need;
+  })();
+  const saveUi = () => { writeLS(UI_KEY, ui); };
+
+  // Notes live in this browser, and in the viewer's private store when the page runs somewhere that offers one.
+  let remote = null;
+  let remoteState = 'off';
+  let localOk = true;
+  let saving = false;
+  let queued = false;
+  let retried = false;
+  let pushTimer = null;
+
+  function changed() {
+    data.updatedAt = Date.now();
+    localOk = writeLS(DATA_KEY, data);
+    if (remote) {
+      remoteState = 'saving';
+      clearTimeout(pushTimer);
+      pushTimer = setTimeout(push, 900);
+    }
+    paintStatus();
+  }
+  function push() {
+    if (!remote) return;
+    if (saving) { queued = true; return; }
+    saving = true;
+    remoteState = 'saving';
+    paintStatus();
+    remote.set(JSON.parse(JSON.stringify(data))).then(function () {
+      remoteState = 'ok';
+      retried = false;
+    }, function (err) {
+      const code = err && err.code;
+      if (code === 'unavailable' || code === 'resource_exhausted') {
+        remoteState = 'error';
+        if (!retried) { retried = true; clearTimeout(pushTimer); pushTimer = setTimeout(push, 3000 + Math.random() * 2000); }
+      } else {
+        remote = null;
+        remoteState = 'off';
+      }
+    }).then(function () {
+      saving = false;
+      paintStatus();
+      if (queued) { queued = false; push(); }
+    });
+  }
+  function connect() {
+    const c = window.claude;
+    if (!c || typeof c.use !== 'function') return;
+    Promise.all([c.use('db'), c.use('user')]).then(function (r) {
+      const db = r[0], user = r[1];
+      if (!db || !user) return null;
+      return user.id().then(function (uid) {
+        if (!uid) return null;
+        const ref = db.doc('data/users/' + uid + '/companion');
+        return ref.get().then(function (snap) {
+          remote = ref;
+          remoteState = 'ok';
+          if (snap && snap.exists) {
+            const theirs = normalize(snap.data());
+            if (theirs.updatedAt > data.updatedAt) {
+              data = theirs;
+              localOk = writeLS(DATA_KEY, data);
+              paintAll();
+            } else if (data.updatedAt > theirs.updatedAt) {
+              push();
+            }
+          } else if (data.updatedAt) {
+            push();
+          }
+          paintStatus();
+        });
+      });
+    }).catch(function () { /* notes stay on this device */ });
+  }
+  function paintStatus() {
+    let text;
+    if (remote) {
+      text = remoteState === 'saving' ? 'Saving…'
+        : remoteState === 'error' ? 'Saved on this device. Saving to your account will be tried again.'
+        : 'Saved privately to your account.';
+    } else {
+      text = localOk ? 'Your notes are saved on this device.' : 'This browser is not saving notes. Copy anything you want to keep.';
+    }
+    $$('.save-status').forEach((el) => { el.textContent = text; });
+  }
+
+  // ---------- navigation ----------
+  function fromHash() {
+    const h = (location.hash || '').replace('#', '');
+    return VIEWS.indexOf(h) >= 0 ? h : null;
+  }
+  function show(view, focus) {
+    VIEWS.forEach((v) => { $('#view-' + v).hidden = v !== view; });
+    $$('[data-nav]').forEach((a) => {
+      const on = a.dataset.nav === view;
+      a.classList.toggle('is-on', on);
+      if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    if (view !== 'practice') stopBreath();
+    window.scrollTo(0, 0);
+    if (focus) {
+      const h = $('#view-' + view + ' h1');
+      if (h) { try { h.focus({ preventScroll: true }); } catch (e) { /* older browsers */ } }
+    }
+  }
+  function go(view) {
+    if (VIEWS.indexOf(view) < 0) view = 'home';
+    try { if (location.hash !== '#' + view) history.pushState(null, '', '#' + view); } catch (e) { /* stay on the same address */ }
+    show(view, true);
+  }
+  document.addEventListener('click', function (e) {
+    const a = e.target.closest('[data-go]');
+    if (!a) return;
+    e.preventDefault();
+    go(a.dataset.go);
+  });
+  window.addEventListener('popstate', function () { show(fromHash() || 'home', false); });
+
+  let toastTimer = null;
+  function toast(msg) {
+    const t = $('#toast');
+    t.textContent = msg;
+    t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.hidden = true; }, 3800);
+  }
+
+  // ---------- my angel ----------
+  function buildAngel() {
+    $('#ways').innerHTML = CHANNELS.map((c) => '<li class="way"><h3>' + esc(c.name) + '</h3><p>' + esc(c.line) + '</p></li>').join('');
+    $('#quiz').innerHTML = CHANNELS.map((c) =>
+      '<fieldset class="ask"><legend>' + esc(c.q) + '</legend><div class="seg">' +
+      LEVELS.map((l) => {
+        const id = 'aq-' + c.id + '-' + l.v;
+        return '<span class="seg__opt"><input type="radio" name="aq-' + c.id + '" id="' + id + '" value="' + l.v + '"><label for="' + id + '">' + l.t + '</label></span>';
+      }).join('') + '</div></fieldset>').join('');
+    $('#quiz').addEventListener('change', function (e) {
+      const t = e.target;
+      if (t.type !== 'radio') return;
+      data.angel[t.name.slice(3)] = Number(t.value);
+      changed();
+      paintAngelResult();
+      paintHome();
+    });
+    $('#angel-result').addEventListener('click', function (e) {
+      if (!e.target.closest('#angel-clear')) return;
+      data.angel = {};
+      changed();
+      paintAngel();
+      paintHome();
+    });
+  }
+  function angelResult() {
+    const answered = CHANNELS.filter((c) => typeof data.angel[c.id] === 'number').length;
+    if (answered < CHANNELS.length) return { state: 'partial', answered: answered };
+    const max = Math.max.apply(null, CHANNELS.map((c) => data.angel[c.id]));
+    if (max === 0) return { state: 'none' };
+    return {
+      state: 'done',
+      top: CHANNELS.filter((c) => data.angel[c.id] === max),
+      quiet: CHANNELS.filter((c) => data.angel[c.id] === 0)
+    };
+  }
+  function paintAngel() {
+    $$('#quiz input').forEach((i) => { i.checked = data.angel[i.name.slice(3)] === Number(i.value); });
+    paintAngelResult();
+  }
+  function paintAngelResult() {
+    const host = $('#angel-result');
+    const r = angelResult();
+    const clear = '<button type="button" class="btn btn--line" id="angel-clear">Clear my answers</button>';
+    if (r.state === 'partial') {
+      const left = CHANNELS.length - r.answered;
+      host.innerHTML = '<div class="result result--waiting"><p>' +
+        (r.answered === 0 ? 'Answer the five statements and your pattern will appear here.' : left + ' more to go. Your pattern appears when all five are answered.') +
+        '</p></div>';
+      return;
+    }
+    if (r.state === 'none') {
+      host.innerHTML = '<div class="result"><p class="eyebrow">Your pattern so far</p><h3>Nothing has stood out yet</h3>' +
+        '<p>That is common. Most of us were never taught what to look for. Keep the seven-day log and note whatever catches your attention on its own.</p>' +
+        '<div class="row"><a class="btn btn--ink" href="#log" data-go="log">Open my listening log</a>' + clear + '</div></div>';
+      return;
+    }
+    const names = r.top.map((c) => lowerFirst(c.name));
+    const headline = r.top.length === CHANNELS.length ? 'All five ways are open to you'
+      : r.top.length === 1 ? 'You notice your angel most through ' + names[0]
+      : 'You notice your angel most through ' + joinList(names);
+    let html = '<div class="result"><p class="eyebrow">Your pattern so far</p><h3>' + esc(headline) + '</h3>';
+    html += r.top.map((c) => '<div class="tip"><strong>' + esc(c.name) + '</strong><p>' + esc(c.tip) + '</p></div>').join('');
+    if (r.quiet.length) {
+      html += '<div class="tip"><strong>Not noticed yet</strong><p>' + esc(joinList(r.quiet.map((c) => c.name))) +
+        '. Leave these alone and stay observant. They may turn up in your log this week.</p></div>';
+    }
+    html += '<p class="small soft">This is your own experience read back to you. A week of notes will tell you more than five questions can.</p>' +
+      '<div class="row"><a class="btn btn--ink" href="#log" data-go="log">Open my listening log</a>' + clear + '</div></div>';
+    host.innerHTML = html;
+  }
+
+  // ---------- guides ----------
+  function buildGuides() {
+    $('#needs').innerHTML = GUIDES.map((g) => '<button type="button" class="chip" data-need="' + g.id + '" aria-pressed="false">' + esc(g.need) + '</button>').join('');
+    $('#guides-list').innerHTML = GUIDES.map((g) =>
+      '<details class="guide" name="guide" id="guide-' + g.id + '" data-id="' + g.id + '">' +
+        '<summary><span class="eyebrow guide__gift">' + esc(g.gift) + '</span><span class="guide__name">' + esc(g.name) + '</span>' +
+        '<span class="guide__tag">For this moment</span><span class="chev" aria-hidden="true"></span></summary>' +
+        '<div class="guide__body"><p>' + esc(g.about) + '</p><dl class="facts">' +
+          '<dt>Shows up when</dt><dd>' + esc(g.near) + '</dd>' +
+          '<dt>Signs</dt><dd><ul class="dots">' + g.signs.map((s) => '<li>' + esc(s) + '</li>').join('') + '</ul></dd>' +
+          '<dt>Feels like</dt><dd>' + esc(g.feel) + '</dd></dl>' +
+          (g.id === 'guardian' ? '<p><a class="link" href="#angel" data-go="angel">See which of these you already know</a></p>' : '') +
+        '</div></details>').join('');
+    $('#needs').addEventListener('click', function (e) {
+      const b = e.target.closest('[data-need]');
+      if (!b) return;
+      ui.need = b.dataset.need;
+      saveUi();
+      paintNeed();
+      const d = $('#guide-' + ui.need);
+      d.open = true;
+      d.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
+    });
+    const first = $('#guide-' + (ui.need || 'guardian'));
+    if (first) first.open = true;
+  }
+  function paintNeed() {
+    $$('#needs [data-need]').forEach((b) => { b.setAttribute('aria-pressed', String(b.dataset.need === ui.need)); });
+    $$('.guide').forEach((d) => { d.classList.toggle('is-picked', d.dataset.id === ui.need); });
+  }
+
+  // ---------- numbers ----------
+  function buildNumbers() {
+    $('#pad').innerHTML = NUMBERS.map((n) => '<button type="button" data-n="' + n.n + '" aria-pressed="false">' + n.n + '</button>').join('');
+    $('#pad').addEventListener('click', function (e) {
+      const b = e.target.closest('[data-n]');
+      if (!b) return;
+      ui.number = b.dataset.n;
+      saveUi();
+      paintNumber();
+    });
+    $('#num-work').addEventListener('click', function () {
+      const cur = data.draft.sign.trim();
+      if (!cur || /^I keep seeing \d{3}$/.test(cur)) {
+        data.draft.sign = 'I keep seeing ' + ui.number;
+        changed();
+        paintDraft();
+      }
+      stepIndex = 0;
+      paintStep();
+      go('practice');
+    });
+  }
+  function paintNumber() {
+    const n = NUMBERS.filter((x) => x.n === ui.number)[0] || NUMBERS[1];
+    $$('#pad [data-n]').forEach((b) => { b.setAttribute('aria-pressed', String(b.dataset.n === n.n)); });
+    $('#num-n').textContent = n.n;
+    $('#num-title').textContent = n.title;
+    $('#num-body').textContent = n.body;
+    $('#num-ask').textContent = n.ask;
+    $('#num-work').textContent = 'Work through ' + n.n + ' step by step';
+  }
+
+  // ---------- practice ----------
+  let stepIndex = 0;
+  let breathing = false;
+  let breathTimers = [];
+
+  function stopBreath() {
+    breathTimers.forEach(clearTimeout);
+    breathTimers = [];
+    breathing = false;
+    const ring = $('#breath-ring');
+    if (!ring) return;
+    ring.classList.remove('is-in', 'is-out');
+    $('#breath-label').textContent = '';
+    $('#breath-btn').textContent = 'Breathe with me';
+  }
+  function startBreath() {
+    if (breathing) { stopBreath(); return; }
+    breathing = true;
+    const ring = $('#breath-ring'), label = $('#breath-label');
+    $('#breath-btn').textContent = 'Stop';
+    let t = 0;
+    for (let i = 0; i < 3; i++) {
+      breathTimers.push(setTimeout(function () { ring.classList.remove('is-out'); ring.classList.add('is-in'); label.textContent = 'Breathe in'; }, t));
+      t += 4000;
+      breathTimers.push(setTimeout(function () { ring.classList.remove('is-in'); ring.classList.add('is-out'); label.textContent = 'And let it go'; }, t));
+      t += 5000;
+    }
+    breathTimers.push(setTimeout(function () { stopBreath(); label.textContent = 'Good. Go on when you are ready.'; }, t));
+  }
+  function paintStep() {
+    $$('[data-step-panel]').forEach((p) => { p.hidden = Number(p.dataset.stepPanel) !== stepIndex; });
+    $$('#rail button').forEach((b) => {
+      if (Number(b.dataset.step) === stepIndex) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+    });
+    $('#step-back').disabled = stepIndex === 0;
+    $('#step-next').hidden = stepIndex === 3;
+    $('#step-save').hidden = stepIndex !== 3;
+    $('#p-msg').textContent = '';
+    if (stepIndex !== 0) stopBreath();
+  }
+  function setStep(i) {
+    stepIndex = Math.max(0, Math.min(3, i));
+    paintStep();
+    $('#rail').scrollIntoView({ block: 'start', behavior: reducedMotion() ? 'auto' : 'smooth' });
+  }
+  function paintDraft() {
+    $$('[data-draft]').forEach((i) => { if (document.activeElement !== i) i.value = data.draft[i.dataset.draft] || ''; });
+  }
+  function saveDraftToLog() {
+    const d = data.draft;
+    if (!DRAFT_FIELDS.some((k) => d[k].trim())) {
+      $('#p-msg').textContent = 'Write at least one line before saving.';
+      return;
+    }
+    const i = firstEmpty();
+    if (i < 0) {
+      $('#p-msg').textContent = 'All seven days are filled. Read them back in your log, then start a new week.';
+      return;
+    }
+    data.log[i] = { sign: d.sign.trim(), context: d.context.trim(), sensed: d.sensed.trim(), step: d.step.trim(), acted: false, date: todayISO() };
+    data.draft = { sign: '', context: '', sensed: '', step: '' };
+    changed();
+    paintAll();
+    stepIndex = 0;
+    paintStep();
+    go('log');
+    const day = $('#day-' + (i + 1));
+    if (day) { day.open = true; day.scrollIntoView({ block: 'center' }); }
+    toast('Saved to day ' + DAYS[i] + ' of your log');
+  }
+  function buildPractice() {
+    $('#view-practice').addEventListener('input', function (e) {
+      const f = e.target.dataset.draft;
+      if (!f) return;
+      data.draft[f] = e.target.value;
+      changed();
+    });
+    $('#rail').addEventListener('click', function (e) {
+      const b = e.target.closest('[data-step]');
+      if (b) setStep(Number(b.dataset.step));
+    });
+    $('#step-back').addEventListener('click', function () { setStep(stepIndex - 1); });
+    $('#step-next').addEventListener('click', function () { setStep(stepIndex + 1); });
+    $('#step-save').addEventListener('click', saveDraftToLog);
+    $('#breath-btn').addEventListener('click', startBreath);
+  }
+
+  // ---------- log ----------
+  const hasContent = (day) => !!(day.sign.trim() || day.context.trim() || day.sensed.trim() || day.step.trim());
+  function firstEmpty() {
+    for (let i = 0; i < data.log.length; i++) if (!hasContent(data.log[i])) return i;
+    return -1;
+  }
+  function buildLog() {
+    const open = firstEmpty();
+    $('#log-days').innerHTML = DAYS.map(function (name, i) {
+      const n = i + 1;
+      const eg = i === 0;
+      return '<details class="day" id="day-' + n + '"' + (i === open ? ' open' : '') + '>' +
+        '<summary><span class="day__name">Day ' + name + '</span><span class="day__sum" id="day-sum-' + n + '"></span>' +
+        '<span class="pill" id="day-pill-' + n + '" hidden></span><span class="chev" aria-hidden="true"></span></summary>' +
+        '<div class="day__body">' +
+          '<p class="day__date span2" id="day-date-' + n + '" hidden></p>' +
+          '<div class="field span2"><label for="log-' + n + '-sign">The sign</label>' +
+            '<input class="input" type="text" id="log-' + n + '-sign" data-day="' + i + '" data-field="sign" autocomplete="off"' + (eg ? ' placeholder="For example: 11:11 on the clock"' : '') + '></div>' +
+          '<div class="field"><label for="log-' + n + '-context">What was happening</label>' +
+            '<textarea id="log-' + n + '-context" data-day="' + i + '" data-field="context"' + (eg ? ' placeholder="For example: I was wondering whether to call my brother"' : '') + '></textarea></div>' +
+          '<div class="field"><label for="log-' + n + '-sensed">What I sensed</label>' +
+            '<textarea id="log-' + n + '-sensed" data-day="' + i + '" data-field="sensed"' + (eg ? ' placeholder="For example: Reach out now. Don\'t wait."' : '') + '></textarea></div>' +
+          '<div class="field span2"><label for="log-' + n + '-step">One next step</label>' +
+            '<input class="input" type="text" id="log-' + n + '-step" data-day="' + i + '" data-field="step" autocomplete="off"' + (eg ? ' placeholder="For example: call him after dinner"' : '') + '></div>' +
+          '<label class="check span2" for="log-' + n + '-acted"><input type="checkbox" id="log-' + n + '-acted" data-day="' + i + '" data-field="acted"> I acted on it</label>' +
+        '</div></details>';
+    }).join('');
+
+    function onEdit(e) {
+      const t = e.target;
+      const f = t.dataset.field;
+      if (!f) return;
+      const i = Number(t.dataset.day);
+      const day = data.log[i];
+      if (!day) return;
+      if (f === 'acted') day.acted = t.checked; else day[f] = t.value;
+      if (hasContent(day)) { if (!day.date) day.date = todayISO(); } else { day.date = ''; }
+      changed();
+      paintDay(i);
+      paintProgress();
+    }
+    $('#log-days').addEventListener('input', onEdit);
+    $('#log-days').addEventListener('change', onEdit);
+
+    $('#week-note').addEventListener('input', function (e) { data.weekNote = e.target.value; changed(); });
+    $('#new-week').addEventListener('click', function () { $('#new-week-confirm').hidden = false; $('#new-week-yes').focus(); });
+    $('#new-week-no').addEventListener('click', function () { $('#new-week-confirm').hidden = true; $('#new-week').focus(); });
+    $('#new-week-yes').addEventListener('click', function () {
+      data.log = DAYS.map(emptyDay);
+      data.weekNote = '';
+      changed();
+      $('#new-week-confirm').hidden = true;
+      paintAll();
+      $$('.day').forEach((d, i) => { d.open = i === 0; });
+      window.scrollTo(0, 0);
+      toast('New week started');
+    });
+  }
+  function paintDay(i) {
+    const n = i + 1, day = data.log[i];
+    const sum = $('#day-sum-' + n), pill = $('#day-pill-' + n), date = $('#day-date-' + n);
+    const text = day.sign.trim() || day.context.trim() || day.sensed.trim() || day.step.trim();
+    sum.textContent = text || 'Nothing noted yet';
+    sum.classList.toggle('has', !!text);
+    pill.hidden = !text;
+    pill.textContent = day.acted ? 'Acted on' : 'Noted';
+    pill.classList.toggle('is-acted', day.acted);
+    const pretty = text ? prettyDate(day.date) : '';
+    date.hidden = !pretty;
+    date.textContent = pretty ? 'Noted ' + pretty : '';
+  }
+  function paintProgress() {
+    const n = data.log.filter(hasContent).length;
+    $('#log-count').textContent = n + ' of 7 days noted';
+    $$('#track i').forEach((el, i) => { el.classList.toggle('is-on', hasContent(data.log[i])); });
+    paintHome();
+  }
+  function paintLog() {
+    $$('#log-days [data-field]').forEach(function (el) {
+      if (document.activeElement === el) return;
+      const day = data.log[Number(el.dataset.day)];
+      if (el.dataset.field === 'acted') el.checked = !!day.acted; else el.value = day[el.dataset.field] || '';
+    });
+    const note = $('#week-note');
+    if (document.activeElement !== note) note.value = data.weekNote;
+    data.log.forEach(function (_, i) { paintDay(i); });
+    paintProgress();
+  }
+
+  // ---------- home ----------
+  function paintHome() {
+    const n = data.log.filter(hasContent).length;
+    $('#door-log').textContent = n ? n + ' of 7 days noted so far.' : 'One line a day teaches you your own language of signs.';
+    const r = angelResult();
+    $('#door-angel').textContent = r.state === 'done' && r.top.length < CHANNELS.length
+      ? 'So far you notice your angel most through ' + joinList(r.top.map((c) => lowerFirst(c.name))) + '.'
+      : 'Five ways your protector gets through, and which ones you already know.';
+  }
+
+  function paintAll() {
+    paintAngel();
+    paintDraft();
+    paintLog();
+    paintHome();
+    paintStatus();
+  }
+
+  // ---------- start ----------
+  buildAngel();
+  buildGuides();
+  buildNumbers();
+  buildPractice();
+  buildLog();
+  paintAll();
+  paintNeed();
+  paintNumber();
+  paintStep();
+  show(fromHash() || 'home', false);
+  connect();
+})();
+</script>
+</body>
+</html>
